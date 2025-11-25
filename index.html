@@ -1,263 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Blippar WebAR — Video on Marker (Optimized)</title>
+    <link rel="shortcut icon" href="#" />
+    <title>STAGE DEV: Blippar WebAR SDK</title>
 
-    <!-- A-Frame -->
-    <script src="https://ar-libs.blippar.com/aframe/1.3.0/aframe-v1.3.0.min.js"></script>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
 
-    <!-- WebAR SDK (keep version you prefer; this is the v2.x used earlier) -->
-    <script src="https://webar-sdk.blippar.com/releases/2.0.8/webar-sdk-v2.0.8.min.js"
+    <!-- Step 1: Include WebAR SDK script -->
+    <script src="webar-sdk/webar-sdk-v2.0.8.min.js"
             webar-mode="marker-tracking"
             auto-init="false"
-            auto-start="false"
-            static-camera="true"
-            render-scene-on-desktop="false"
-            enable-tracking-on-desktop="true"
-            show-qr-card-on-desktop="true"
-            ios-camera-permission="true"></script>
-
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            background: #000;
-            color: #fff;
-            font-family: Inter, Arial, sans-serif;
-        }
-
-        a-scene {
-            width: 100%;
-            height: 100vh;
-            display: block;
-        }
-        /* Overlay shown before camera/sound allowed */
-        #gate {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.85));
-            z-index: 10000;
-            padding: 24px;
-            text-align: center;
-        }
-
-            #gate .inner {
-                max-width: 520px;
-            }
-
-        #enableBtn {
-            margin-top: 18px;
-            background: linear-gradient(90deg,#00AAFF,#00FFFF);
-            border: none;
-            padding: 14px 22px;
-            font-size: 16px;
-            color: #06202a;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-        }
-
-        #message {
-            font-size: 16px;
-            line-height: 1.4;
-            color: #dff7ff;
-        }
-
-        #errorText {
-            margin-top: 12px;
-            color: #ffcccc;
-            font-size: 14px;
-            display: none;
-        }
-        /* small helper for debugging logs visible on screen (optional) */
-        #miniLog {
-            position: fixed;
-            right: 12px;
-            bottom: 12px;
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            z-index: 10001;
-            max-width: 280px;
-            line-height: 1.2;
-        }
-    </style>
+            auto-start="true"
+            logo-src="images/test_logo_here.png"
+            logo-width="116px"
+            logo-height="116px"
+            progress-dot-ring-scale="0.30"
+            progress-dot-ring-color="#00AAFF"
+            progress-ring-scale="0.36"
+            progress-ring-color="#00FFFF"
+            progress-ring-line-width="5"
+            alert-border-color="#00FFFF"
+            alert-border-width="5px"
+            alert-background-color="#283747"
+            alert-message-text-color="#00AAFF"
+            alert-button-color="#00FFFF"
+            alert-button-text-color="#283747"
+            alert-button-height="50px"
+            alert-camera-permission-text="We need to ask for access to the camera so this experience can work!!!"
+            alert-camera-permission-button-text="No Problem"
+            alert-motion-permission-text="Now we need access to motion sensors!!!"
+            alert-motion-permission-button-text="No Problem"
+            alert-box-width="290px"
+            alert-box-height="182px"
+            alert-box-font-size="24px"
+            ui-background-color="#283747"
+            ui-text-color="#00FFFF"
+            desktop-logo-src="images/test_desktop_logo.png"
+            desktop-logo-width="108px"
+            desktop-logo-height="30px"
+            issue-img-src="images/test_issue_img.png"
+            issue-img-width="116px"
+            issue-img-height="116px"
+            show-guide-view="true"
+            auto-marker-detection="true"
+            auto-scan-instruction="Look for a marker to scan..."
+            auto-scan-instruction-detect="Detecting..."
+            auto-scan-instruction-idle="Move around to look for a marker"
+            auto-scan-instruction-text-style="color: orange"
+            auto-scan-style="display: none; position: absolute; top: 90%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; width: auto; height: auto; text-align: center;"
+            auto-scan-style-display="block"
+            scan-btn-width="100"
+            scan-btn-height="100"
+            scan-btn-display="block"
+            scan-btn-instruction="Tap to scan"
+            scan-btn-instruction-style="color: white"
+            scan-btn-img-src="images/user_scan-btn-image_here.png"
+            scan-btn-img-width="50"
+            scan-btn-img-height="50"
+            scan-btn-img-x-coordinate="50%"
+            scan-btn-img-y-coordinate="50%"
+            scan-btn-img-transform="translate(-25, -25)"
+            scan-btn-progress-circle-cx-coordinate="50"
+            scan-btn-progress-circle-cy-coordinate="50"
+            scan-btn-progress-circle-radius="35"
+            scan-btn-progress-circle-style="fill: none; stroke: cyan; stroke-width: 6;"
+            scan-btn-progress-bar-cx-coordinate="50"
+            scan-btn-progress-bar-cy-coordinate="50"
+            scan-btn-progress-bar-radius="35"
+            scan-btn-progress-bar-transform="rotate(-90 50 50)"
+            scan-btn-progress-bar-color="blue"></script>
 </head>
+
 <body>
-    <!-- AFRAME / WebAR scene: replace `key:` with your Blippar license key -->
+
     <a-scene webar-scene="key: cf647511-9802-48ec-8bd2-0b0a0edb9001"
              vr-mode-ui="enabled: false"
              device-orientation-permission-ui="enabled: false"
              loading-screen="enabled: false"
              renderer="colorManagement: true;">
+
         <a-camera webar-camera></a-camera>
 
+        <!-- ASSETS -->
         <a-assets timeout="60000">
-            <!-- Video: boolean attributes must not have values -->
-            <video id="promoVideo"
+            <a-asset-item id="testmodel1" src="models/MaterialsVariantsShoe.glb"></a-asset-item>
+            <a-asset-item id="testmodel2" src="models/astronaut.glb"></a-asset-item>
+
+            <!-- 🎬 Add your video here -->
+            <video id="trackedVideo"
                    src="videos/demo.mp4"
                    preload="auto"
                    autoplay
                    loop
                    muted
                    playsinline
-                   crossorigin="anonymous"></video>
+                   crossorigin="anonymous">
+            </video>
         </a-assets>
 
-        <!-- Marker entity (replace id with your real marker ID from Blippar) -->
-        <a-entity webar-marker="id: be85b792-9b8c-4aaa-b249-ce64792aafbd">
-            <!-- Video plane replaces model; rotated so it lies on the marker surface -->
+        <!-- MARKER 1 WITH MODEL -->
+        <a-entity webar-marker="id: b3ed7e4c-7423-44c0-8af1-63567b27a1e9">
+            <a-entity gltf-model="#testmodel1" id="testmodel_1"
+                      rotation="90 0 0" position="0 0 0" scale="5 5 5"
+                      webar-loadmonitor="elType: glb">
+            </a-entity>
+
+            <!-- 🎬 VIDEO PLANE (hidden initially) -->
             <a-video id="videoPlane"
-                     src="#promoVideo"
-                     width="1.6"
-                     height="0.9"
-                     position="0 0 0"
+                     src="#trackedVideo"
+                     width="1.5"
+                     height="0.85"
+                     position="0 0.1 0"
                      rotation="-90 0 0"
-                     visible="false"></a-video>
+                     visible="false">
+            </a-video>
         </a-entity>
+
+        <!-- MARKER 2 WITH MODEL -->
+        <a-entity webar-marker="id: 7a9ca8e2-bf27-44c1-828d-6bca876bb7a7">
+            <a-entity gltf-model="#testmodel2" id="testmodel_2"
+                      rotation="0 0 0" position="0 -0.5 0" scale="0.25 0.25 0.25"
+                      webar-loadmonitor="elType: glb">
+            </a-entity>
+        </a-entity>
+
     </a-scene>
 
-    <!-- Fullscreen gate to request user gesture (camera + audio) -->
-    <div id="gate" role="dialog" aria-modal="true">
-        <div class="inner">
-            <h2 style="margin:0 0 8px 0">Enable camera & sound</h2>
-            <p id="message">
-                To run this WebAR experience we need camera access. Tap the button below to grant camera access
-                and enable sound for the video. On iOS please use Safari for best compatibility.
-            </p>
-            <button id="enableBtn">Enable camera & sound</button>
-            <div id="errorText"></div>
-        </div>
-    </div>
-
-    <div id="miniLog" aria-hidden="true">status: waiting</div>
-
     <script>
-        // Short helpers
-        const logEl = document.getElementById('miniLog');
-        function log(msg) { console.info(msg); if (logEl) logEl.textContent = 'status: ' + msg; }
-        function showError(msg) { const e = document.getElementById('errorText'); e.style.display = 'block'; e.textContent = msg; }
+        WEBARSDK.Init();
 
-        // Elements
-        const gate = document.getElementById('gate');
-        const enableBtn = document.getElementById('enableBtn');
-        const video = document.getElementById('promoVideo');
-        const videoPlane = document.getElementById('videoPlane');
+        const video = document.getElementById("trackedVideo");
+        const videoPlane = document.getElementById("videoPlane");
 
-        // Marker id you use in Blippar Hub — must match
-        const MARKER_ID = "be85b792-9b8c-4aaa-b249-ce64792aafbd";
+        WEBARSDK.SetMarkerDetectedCallback((markerId) => {
+            console.log("Marker detected:", markerId);
 
-        // Initialize the SDK (explicit init)
-        try {
-            log('initializing SDK...');
-            WEBARSDK.Init();
-        } catch (err) {
-            console.error('WEBARSDK.Init() failed', err);
-            showError('SDK init failed: ' + (err && err.message ? err.message : err));
-            log('sdk-init-failed');
-        }
+            if (markerId === "be85b792-9b8c-4aaa-b249-ce64792aafbd") {
 
-        // Button to request camera permission + prepare audio
-        enableBtn.addEventListener('click', async () => {
-            try {
-                log('Requesting permissions & starting SDK...');
-                // Some SDK versions require Start() to trigger permission dialog
-                if (typeof WEBARSDK.Start === 'function') {
-                    WEBARSDK.Start();
-                }
-                // Unmute and attempt to play the video once user tapped
-                if (video) {
-                    video.muted = false;          // allow audio after user gesture
-                    // Reset to start (optional) and play
-                    try { video.currentTime = 0; } catch (e) { }
-                    await video.play().catch(e => {
-                        console.warn('video.play() after user gesture failed', e);
-                    });
-                }
-                // Hide gate overlay and proceed
-                gate.style.display = 'none';
-                log('camera & audio enabled');
-            } catch (err) {
-                console.error('Start / permission error', err);
-                showError('Could not start camera. Check site permissions, HTTPS, and license key.');
-                log('start-failed');
+                videoPlane.setAttribute("visible", true);
+
+                video.muted = false;   // allow audio
+                video.currentTime = 0; // restart
+                video.play().catch(err => {
+                    console.warn("Video blocked until user taps screen", err);
+                });
             }
-        }, { once: true });
-
-        // Marker callbacks (SDK provides)
-        // When a marker is detected -> show video plane and play
-        if (typeof WEBARSDK.SetMarkerDetectedCallback === 'function') {
-            WEBARSDK.SetMarkerDetectedCallback((markerId) => {
-                console.info('Marker detected:', markerId);
-                log('marker detected');
-                if (markerId === MARKER_ID) {
-                    // show plane
-                    if (videoPlane) videoPlane.setAttribute('visible', true);
-                    // restart video and play
-                    try { video.currentTime = 0; } catch (e) { }
-                    video.play().catch(err => {
-                        // autoplay may be blocked if user didn't gesture — keep gate visible in that case
-                        console.warn('video.play() blocked on detect:', err);
-                        if (gate.style.display !== 'none') {
-                            // show gate to ask user to enable
-                            gate.style.display = 'flex';
-                        }
-                    });
-                }
-            });
-        } else {
-            console.warn('SetMarkerDetectedCallback not available on WEBARSDK');
-        }
-
-        // When marker is lost -> pause video and hide plane
-        if (typeof WEBARSDK.SetMarkerLostCallback === 'function') {
-            WEBARSDK.SetMarkerLostCallback((markerId) => {
-                console.info('Marker lost:', markerId);
-                log('marker lost');
-                if (markerId === MARKER_ID) {
-                    if (videoPlane) videoPlane.setAttribute('visible', false);
-                    try { video.pause(); } catch (e) { }
-                }
-            });
-        }
-
-        // Optional: show SDK readiness & fallback checks
-        // Some SDKs provide onReady/onError APIs — try to hook them if available
-        if (typeof WEBARSDK.OnReady === 'function') {
-            WEBARSDK.OnReady(() => { log('sdk ready'); });
-        } else {
-            // Not all SDKs have OnReady; just show ready after small delay
-            setTimeout(() => log('sdk initialised (delayed)'), 800);
-        }
-
-        // Small runtime verification: ensure the video asset loaded
-        video.addEventListener('error', (e) => {
-            console.error('Video asset failed to load', e);
-            showError('Video failed to load. Check path: videos/demo.mp4');
-            log('video-error');
-        });
-        video.addEventListener('loadeddata', () => {
-            console.info('Video loaded');
-            log('video loaded');
         });
 
-        // If license invalid or SDK throws an error, show gate with message
-        window.addEventListener('error', (ev) => {
-            const err = ev.error || ev;
-            // Filter noisy logs & show only likely SDK/license issues
-            if (err && /license|webar|blippar/i.test(String(err.message || err))) {
-                showError('SDK error: ' + (err.message || String(err)));
-                gate.style.display = 'flex';
-                log('sdk-error');
+        WEBARSDK.SetMarkerLostCallback((markerId) => {
+            console.log("Marker lost:", markerId);
+
+            if (markerId === "be85b792-9b8c-4aaa-b249-ce64792aafbd") {
+                video.pause();
+                videoPlane.setAttribute("visible", false);
             }
         });
     </script>
+
 </body>
 </html>
