@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <link rel="shortcut icon" href="#" />
+    <title>Blippar WebAR SDK</title>
+
+    <script src="https://ar-libs.blippar.com/aframe/1.3.0/aframe-v1.3.0.min.js"></script>
+
+    <!-- Step 1: Include WebAR SDK script -->
+    <!-- PS: User may overload the splash screen by passing function string to on-load parameter
+         e.g. on-load = "LoadMySplash()" -->
+    <script src="https://webar-sdk.blippar.com/releases/2.0.8/webar-sdk-v2.0.8.min.js"
+      on-load=""
+      webar-mode="marker-tracking"
+      auto-init="false"
+      auto-start="true"
+      static-camera="true"
+      render-scene-on-desktop="false"
+      enable-tracking-on-desktop="true"
+      show-qr-card-on-desktop="true"
+      ios-camera-permission="false"
+      enable-photo-ui="true"
+      alert-border-radius="5px"
+      alert-button-border-radius="3px"
+      logo-src="./images/test_logo_here.png"
+      logo-width="116px"
+      logo-height="116px"
+      progress-dot-ring-scale="0.30"
+      progress-dot-ring-color="#00AAFF"
+      progress-ring-scale="0.36"
+      progress-ring-color="#00FFFF"
+      progress-ring-line-width="5"
+
+      alert-border-color="#00FFFF"
+      alert-border-width="5px"
+      alert-background-color="#283747"
+      alert-message-text-color="#00AAFF"
+      alert-button-color="#00FFFF"
+      alert-button-text-color="#283747"
+      alert-button-height="50px"
+      alert-camera-permission-text="We need to ask for access to the camera so this experience can work!!!"
+      alert-camera-permission-button-text="No Problem"
+      alert-motion-permission-text="Now we need access to motion sensors!!!"
+      alert-motion-permission-button-text="No Problem"
+      alert-box-width="290px"
+      alert-box-height="182px"
+      alert-box-font-size="24px"
+
+      ui-background-color="#283747"
+      ui-text-color="#00FFFF"
+      ui-portrait-text="This experience is optimised for portrait display only"
+      desktop-logo-src="./images/test_desktop_logo.png"
+      desktop-logo-width="108px"
+      desktop-logo-height="30px"
+      issue-img-src="./images/test_issue_img.png"
+      issue-img-width="116px"
+      issue-img-height="116px"
+      show-guide-view="true"
+
+      auto-marker-detection="true"
+      auto-scan-instruction="Look for a marker to scan..."
+      auto-scan-instruction-detect="Detecting..."
+      auto-scan-instruction-idle="Move around to look for a marker"
+      auto-scan-instruction-text-style="color: orange"
+      auto-scan-style="display: none; position: absolute; top: 90%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; width: auto; height: auto; text-align: center;"
+      auto-scan-style-display="block"
+      scan-btn-width="100"
+      scan-btn-height="100"
+      scan-btn-display="block"
+      scan-btn-instruction="Tap to scan"
+      scan-btn-instruction-style="color: white"
+      scan-btn-img-src="./images/user_scan-btn-image_here.png"
+      scan-btn-img-width="50"
+      scan-btn-img-height="50"
+      scan-btn-img-x-coordinate="50%"
+      scan-btn-img-y-coordinate="50%"
+      scan-btn-img-transform="translate(-25, -25)"
+      scan-btn-progress-circle-cx-coordinate="50"
+      scan-btn-progress-circle-cy-coordinate="50"
+      scan-btn-progress-circle-radius="35"
+      scan-btn-progress-circle-style="fill: none; stroke: whitesmoke; stroke-width: 6;"
+      scan-btn-progress-bar-cx-coordinate="50"
+      scan-btn-progress-bar-cy-coordinate="50"
+      scan-btn-progress-bar-radius="35"
+      scan-btn-progress-bar-transform="rotate(-90 50 50)"
+      scan-btn-progress-bar-color="cyan"></script>
+
+  </head>
+
+  <body>
+
+    <!-- Step 2: Add webar-scene attribute to AFrame's <a-scene> tag -->
+      <!-- Provide a valid Blippar license-key value in the key: property  -->
+      <a-scene webar-scene="key: cf647511-9802-48ec-8bd2-0b0a0edb9001"
+               vr-mode-ui="enabled: false"
+               device-orientation-permission-ui="enabled: false"
+               loading-screen="enabled: false"
+               renderer="colorManagement: true;">
+
+          <!-- Step 3: Add webar-camera attribute to AFrame's <a-entity camera> tag -->
+          <a-camera webar-camera></a-camera>
+
+          <a-assets timeout="60000">
+              <!-- 🎬 Your video file (boolean attributes have NO values) -->
+              <video id="promoVideo"
+                     src="videos/demo.mp4"
+                     preload="auto"
+                     autoplay
+                     loop
+                     muted
+                     playsinline
+                     crossorigin="anonymous">
+              </video>
+          </a-assets>
+
+          <!-- MARKER — Video Only -->
+          <a-entity webar-marker="id: be85b792-9b8c-4aaa-b249-ce64792aafbd">
+
+              <a-video id="videoPlane"
+                       src="#promoVideo"
+                       width="1.5"
+                       height="0.9"
+                       position="0 0 0"
+                       rotation="-90 0 0"
+                       visible="false">
+              </a-video>
+          </a-entity>
+      </a-scene>
+
+    <!-- Refer API:Functions documentation for more details -->
+    <script>
+        WEBARSDK.Init();
+
+        const video = document.getElementById("promoVideo");
+        const videoPlane = document.getElementById("videoPlane");
+
+        // Ensure audio can play (Chrome requires user gesture)
+        document.body.addEventListener("click", () => {
+            video.muted = false;
+            video.play().catch(() => { });
+        }, { once: true });
+
+      // Give a callback when the WebAR Marker <a-entity webar-marker> is ready  to track the marker image
+        WEBARSDK.SetMarkerDetectedCallback((markerId) => {
+            console.info('Marker is detected for marker id: ', markerId);
+
+            if (markerId === "be85b792-9b8c-4aaa-b249-ce64792aafbd") {
+                videoPlane.setAttribute("visible", true);
+
+                video.muted = false;
+                video.loop = true;
+
+                video.play().catch(err => {
+                    console.warn("Autoplay blocked, waiting for user tap.", err);
+                });
+            }
+      });
+
+      // Give a callback when the WebAR Marker <a-entity webar-marker> is lost
+      WEBARSDK.SetMarkerLostCallback((markerId) => {
+          console.info('Marker tracking is lost for marker id: ', markerId);
+          if (markerId === "be85b792-9b8c-4aaa-b249-ce64792aafbd") {
+              video.pause();
+              videoPlane.setAttribute("visible", false);
+          }
+      });
+
+      /**
+       * Sets custom style for auto marker detection(auto-marker-detection = true):
+       *  (1) Add your custom html layout for auto marker detection
+       *  (2) May disable scan instruction if needed, by default it is true
+       * @param {HTMLElement} custom division
+       * @param {boolean} showScanInstructions set it to false to disable it
+       */
+      //WEBARSDK.SetAutoMarkerDetectionStyle(htmlElement, showScanInstructions)
+      
+    </script>
+  </body>
+</html>
